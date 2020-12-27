@@ -3,17 +3,16 @@ package com.rohitthebest.fingerprintauthentication
 import android.Manifest
 import android.app.KeyguardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.biometrics.BiometricPrompt
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CancellationSignal
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
@@ -44,25 +43,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        checkBiometricSupport()
+        if (checkBiometricSupport()) {
 
-        val btnAuthentication = findViewById<Button>(R.id.btn_authentication)
+            val btnAuthentication = findViewById<Button>(R.id.btn_authentication)
 
-        btnAuthentication?.setOnClickListener {
+            btnAuthentication?.setOnClickListener {
 
-            val biometricPrompt = BiometricPrompt.Builder(this)
+                val biometricPrompt = BiometricPrompt.Builder(this)
                     .setTitle("Use fingerprint")
                     .setSubtitle("Authentication is required")
                     .setDescription("This app has fingerprint protection to keep your data secret")
-                    .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
+                    .setNegativeButton(
+                        "Cancel",
+                        this.mainExecutor,
+                        { dialog, which ->
 
-                        showToast("Authentication cancelled")
-                    }).build()
+                            showToast("Authentication cancelled")
+                        }).build()
 
-            biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
+                biometricPrompt.authenticate(
+                    getCancellationSignal(),
+                    mainExecutor,
+                    authenticationCallback
+                )
 
+            }
+        } else {
+            showToast("Something went Wrong!!!")
         }
-
     }
 
     private fun showToast(message: String) {
@@ -98,9 +106,7 @@ class MainActivity : AppCompatActivity() {
             return false
         }
 
-        return if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-            true
-        } else true
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
     }
 
 
