@@ -3,4 +3,4 @@ using fingerprint authentication
 
 # Demo
 
-[![demo ](./fingerprint.gif)]
+[![demo ](./fingerprint2.gif)]
